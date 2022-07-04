@@ -1,0 +1,100 @@
+openapi: 3.0.1
+info:
+  title: BookStore application
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /:
+    get:
+      summary: First page of the book list
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+    put:
+      summary: Update book info
+      security:
+        - basicAuth: []
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: newName
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: price
+          schema:
+            type: number
+          required: false
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Add new book
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: ok
+  /{page}:
+    get:
+      summary: Paginated book list
+      parameters:
+        - in: path
+          name: page
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+  /bookListUpdate:
+    post:
+      summary: Add book list, if book exists, update price
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookList'
+      responses:
+        '200':
+          description: ok
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+    BookList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
